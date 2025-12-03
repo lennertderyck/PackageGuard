@@ -1,0 +1,15 @@
+{
+  "name": "aikido-safe-package-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension for Aikido Safe Package",
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "copy-files": "cp manifest.json content.css ../dist/ && cp -r images ../dist/images 2>/dev/null || true",
+    "watch": "tsc --watch",
+    "clean": "rm -rf ../dist"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.254",
+    "typescript": "^5.3.3"
+  }
+}
