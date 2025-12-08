@@ -59,7 +59,7 @@ const Page: FC<{ params: Promise<{ packageNameSlug: string[] }> }> = async ({
     {
       name: "Aikido",
       about: "Malware predictions list",
-      url: "https://malware-list.aikido.dev/malware_predictions.json",
+      url: "https://intel.aikido.dev/packages/npm/" + fullPackageName,
       resolvedResult: hasAikidoMalwarePrediction ? ["malware"] : [],
       logoAsset: LogoAikido
     }
