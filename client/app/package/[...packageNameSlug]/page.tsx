@@ -32,6 +32,8 @@ const Page: FC<{ params: Promise<{ packageNameSlug: string[] }> }> = async ({
     (item: any) => item.package_name === fullPackageName
   );
 
+  console.log(packageResponse);
+
   const githubAdvisoryResponse = (await (
     await fetch(
       `https://api.github.com/advisories?ecosystem=npm&affects=${encodeURI(
@@ -75,12 +77,16 @@ const Page: FC<{ params: Promise<{ packageNameSlug: string[] }> }> = async ({
     {
       name: "Code",
       label: "GitHub",
-      url: parseRepositoryUrl(packageResponse?.repository.url).href,
+      url: packageResponse?.repository
+        ? parseRepositoryUrl(packageResponse?.repository?.url)?.href
+        : null,
       icon: Code
     },
     {
       name: "Homepage",
-      label: new URL(packageResponse?.homepage).host,
+      label: packageResponse?.homepage
+        ? new URL(packageResponse?.homepage).host
+        : null,
       url: packageResponse?.homepage,
       icon: Globe2
     }
@@ -105,10 +111,10 @@ const Page: FC<{ params: Promise<{ packageNameSlug: string[] }> }> = async ({
             <h2 className="mt-2">version {packageResponse.version}</h2>
           </div>
           <ul className="divide-y divide-white/20 border border-white/20 rounded-xl px-2">
-            {SOURCES.map((source) => (
+            {SOURCES.filter((source) => !!source.url).map((source) => (
               <li key={source.name} className="py-2">
                 <Link
-                  href={source.url}
+                  href={source.url!}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 hover:bg-white/5 py-2 px-4 rounded-sm transition-colors"
