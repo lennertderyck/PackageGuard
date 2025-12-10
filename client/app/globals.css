@@ -10,12 +10,16 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
+  --color-primary-950: #010022;
+  --color-primary-900: #080630;
+  --color-primary-850: #0e0b3d;
+  --color-primary-800: #1a1557;
+  --color-primary-700: #33298b;
+  --color-primary-600: #4c3dbf;
   --color-primary-500: #6551f3;
-  --color-primary-300: color-mix(
-    in oklab,
-    var(--color-background),
-    var(--color-primary-500) 50%
-  );
+  --color-primary-400: #7361f4;
+  --color-primary-300: #806ff5;
+  --color-primary-200: #8c7cf6;
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

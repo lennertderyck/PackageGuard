@@ -68,7 +68,8 @@ createRoot(container()!).render(
                     runtime: chrome.runtime.sendMessage
                 });
                 chrome.runtime.sendMessage({
-                    action: "OPEN_SIDE_PANEL"
+                    action: "OPEN_SIDE_PANEL",
+                    packageInfo: packageInfo
                 });
             }}
         >
