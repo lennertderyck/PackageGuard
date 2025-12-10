@@ -7,7 +7,7 @@ import {
 } from "@/src/lib/queries";
 import {
   getPackageNameFromSlugArray,
-  parsePackageName,
+  parsePackageInfoFromSlug,
   parseRepositoryUrl
 } from "@/src/lib/utils/general";
 import className from "classnames";
@@ -22,7 +22,8 @@ const PackageStatusPage: FC<{
   const { packageNameSlug } = await params;
 
   const fullPackageName = getPackageNameFromSlugArray(packageNameSlug);
-  const { scope, scopedPackageName } = parsePackageName(fullPackageName);
+  const { scope, scopedPackageName } =
+    parsePackageInfoFromSlug(fullPackageName);
 
   const npmPackageInfoResponse = await getNpmPackageInfo(fullPackageName),
     githubAdvisoryResponse = await getGithubAdvisoryResultForPackage(

@@ -7,9 +7,9 @@ export const getPackageNameFromSlugArray = <T extends string[]>(
   );
 };
 
-export const parsePackageName = (packageName: string) => {
-  const scoped = packageName.startsWith("@");
-  const [scopeOrName, scopedName] = packageName.split("/");
+export const parsePackageInfoFromSlug = (packgeNameSlug: string) => {
+  const scoped = packgeNameSlug.startsWith("@");
+  const [scopeOrName, scopedName] = packgeNameSlug.split("/");
 
   return {
     scope: scoped ? scopeOrName : null,
