@@ -12,7 +12,7 @@ const Page: FC<{
   const { name, version = "latest" } = await searchParams;
 
   const { scope, scopedPackageName } = parsePackageInfoFromSlug(name);
-  const npmPackageInfoResponse = await getNpmPackageInfo(name);
+  const npmPackageInfoResponse = await getNpmPackageInfo(name, undefined);
 
   return (
     <div className="p-1 flex flex-col justify-between h-screen">
