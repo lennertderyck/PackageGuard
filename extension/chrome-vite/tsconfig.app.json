@@ -11,7 +11,7 @@
         "moduleResolution": "bundler",
         "paths": {
             "@/*": ["src/*"],
-            "@shared/*": ["../../shared/*"]
+            "@/shared/*": ["../../shared/*"]
         },
         "types": ["vite/client", "chrome"],
         "allowImportingTsExtensions": true,

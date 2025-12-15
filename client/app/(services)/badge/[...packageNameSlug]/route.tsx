@@ -3,12 +3,12 @@ import {
   getGithubAdvisoryResultForPackage,
   getNpmPackageInfo
 } from "@/src/lib/queries";
-import { getPackageInfoFromUrl } from "@shared/parsers";
 import dayjs from "dayjs";
 import { readFileSync } from "fs";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import satori from "satori";
+import { getPackageInfoFromUrl } from "../../../../src/lib/utils/parsers";
 
 // - I am a developer -> redirect
 // - I am not a developer ->

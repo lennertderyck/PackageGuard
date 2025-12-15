@@ -5,13 +5,13 @@ import {
   getNpmPackageInfo
 } from "@/src/lib/queries";
 import { parseRepositoryUrl } from "@/src/lib/utils/general";
-import { getPackageInfoFromUrl } from "@shared/parsers";
 import className from "classnames";
 import dayjs from "dayjs";
 import { ArrowRight, Code, Globe2, Package } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FC } from "react";
+import { getPackageInfoFromUrl } from "../../../lib/utils/parsers";
 
 const PackageStatusPage: FC<{
   params: Promise<{ packageNameSlug: string[] }>;
