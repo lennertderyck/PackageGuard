@@ -30,15 +30,14 @@ export const getAikidoMalwarePredictionForPackage = async (
 };
 
 export const getGithubAdvisoryResultForPackage = async (
-  packageName: string
+  packageName: string,
+  version?: string
 ) => {
-  const TYPE = "malware";
-
   return (await (
     await fetch(
       `https://api.github.com/advisories?ecosystem=npm&affects=${encodeURI(
-        packageName
-      )}&type=${TYPE}`,
+        version ? `${packageName}@${version}` : packageName
+      )}&type=malware&type=reviewed`,
       {
         headers: {
           Authorization: `Bearer ${process.env.SERVICE_TOKEN_GITHUB}`,

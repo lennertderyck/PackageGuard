@@ -49,7 +49,8 @@ const PackageStatusPage: FC<{
       undefined
     ),
     githubAdvisoryResponse = await getGithubAdvisoryResultForPackage(
-      fullPackageName
+      fullPackageName,
+      packageVersion
     ),
     aikidoMalwarePredictionsResponse = await getAikidoMalwarePredictions(),
     hasAikidoMalwarePrediction = aikidoMalwarePredictionsResponse.some(
@@ -81,10 +82,16 @@ const PackageStatusPage: FC<{
     {
       name: "GitHub",
       about: "GitHub Advisory Database",
-      url: "https://github.com/advisories?query=" + fullPackageName,
-      resolvedResult: githubAdvisoryResponse?.map(
-        (gitHubadvisory) => gitHubadvisory.type
-      ),
+      url: `https://github.com/advisories?query=${encodeURIComponent(
+        `ecosystem:npm affects:${fullPackageName}`
+      )}`,
+      resolvedResult: githubAdvisoryResponse.length
+        ? [
+            githubAdvisoryResponse.length === 1
+              ? "1 advisory"
+              : `${githubAdvisoryResponse.length} advisories`
+          ]
+        : [],
       logoAsset: LOGO_GITHUB
     },
     {
