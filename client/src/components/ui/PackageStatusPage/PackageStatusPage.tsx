@@ -60,6 +60,8 @@ const PackageStatusPage: FC<{
       npmPackageInfoResponse.time[npmPackageVersionInfoResponse.version],
     packageIsOlderThan24h = dayjs().diff(dayjs(updatedAt), "hour") > 24;
 
+  console.log({ githubAdvisoryResponse });
+
   const ADVISORIES = [
     {
       name: "NPM",
@@ -83,7 +85,9 @@ const PackageStatusPage: FC<{
       name: "GitHub",
       about: "GitHub Advisory Database",
       url: `https://github.com/advisories?query=${encodeURIComponent(
-        `ecosystem:npm affects:${fullPackageName}`
+        `ecosystem:npm ${githubAdvisoryResponse
+          .map((advisory) => advisory.ghsa_id)
+          .join(" ")}`
       )}`,
       resolvedResult: githubAdvisoryResponse.length
         ? [
