@@ -35,14 +35,8 @@ export const GET = async (
     aikidoMalwarePrediction = await getAikidoMalwarePredictionForPackage(
       joinedPackageName
     ),
-    npmPackageVersionInfo = await getNpmPackageInfo(
-      packageInfo?.name || "",
-      packageInfo?.version || undefined
-    ),
-    npmPackageInfo = await getNpmPackageInfo(
-      packageInfo?.name || "",
-      undefined
-    ),
+    npmPackageVersionInfo = await getNpmPackageInfo(packageInfo?.name || ""),
+    npmPackageInfo = await getNpmPackageInfo(packageInfo?.name || ""),
     hasGithubAdvisory = githubAdvisoryResult.length > 0,
     hasAikidoMalwarePrediction = !!aikidoMalwarePrediction,
     updatedAt = npmPackageInfo.time[npmPackageVersionInfo.version],
