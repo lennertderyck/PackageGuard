@@ -33,19 +33,19 @@ const PackageStatusPage: FC<{
     );
   }
 
-  const {
-    scope,
-    name: fullPackageName,
-    scopedPackageName
-  } = packageInfoFromSlug;
+  const { scope, packageName: fullPackageName } = packageInfoFromSlug;
+
+  const scopedPackageName = packageInfoFromSlug.name.scoped;
 
   const packageVersion = packageInfoFromSlug.version || "latest";
 
   const npmPackageVersionInfoResponse = await getNpmPackageVersionInfo(
-      packageInfoFromSlug.name,
+      packageInfoFromSlug.packageName,
       packageVersion
     ),
-    npmPackageInfoResponse = await getNpmPackageInfo(packageInfoFromSlug.name),
+    npmPackageInfoResponse = await getNpmPackageInfo(
+      packageInfoFromSlug.packageName
+    ),
     githubAdvisoryResponse = await getGithubAdvisoryResultForPackage(
       fullPackageName,
       packageVersion
@@ -57,8 +57,6 @@ const PackageStatusPage: FC<{
     updatedAt =
       npmPackageInfoResponse.time[npmPackageVersionInfoResponse.version],
     packageIsOlderThan24h = dayjs().diff(dayjs(updatedAt), "hour") > 24;
-
-  console.log({ githubAdvisoryResponse });
 
   const ADVISORIES = [
     {

@@ -1,12 +1,9 @@
-import { getPackageInfoFromUrl } from "@/lib/utils";
 import { FC } from "react";
 
 const BadgeContent: FC = () => {
-    const packageInfo = getPackageInfoFromUrl();
-
     return (
         <button
-            title={`Security status for ${packageInfo?.parsed}`}
+            title={`Visit security status details for this package`}
             style={{
                 width: "300px",
                 display: "block",
@@ -17,9 +14,8 @@ const BadgeContent: FC = () => {
             }}
             onClick={() => {
                 window.open(
-                    `https://packageguard-jung-gent.vercel.app/package/${
-                        packageInfo?.name
-                    }/v/${packageInfo?.version || "latest"}`,
+                    "https://packageguard-jung-gent.vercel.app/s/u/?t=info&source=" +
+                        encodeURIComponent(window.location.href),
                     "_blank"
                 );
                 // chrome.runtime.sendMessage({
@@ -29,9 +25,10 @@ const BadgeContent: FC = () => {
             }}
         >
             <img
-                src={`https://packageguard-jung-gent.vercel.app/badge/${
-                    packageInfo?.name
-                }/v/${packageInfo?.version || "latest"}/badge.svg`}
+                src={
+                    "https://packageguard-jung-gent.vercel.app/s/u/?t=badge&source=" +
+                    encodeURIComponent(window.location.href)
+                }
                 style={{ width: "100%", display: "block" }}
             />
         </button>

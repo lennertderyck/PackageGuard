@@ -30,13 +30,15 @@ export const GET = async (
   const packageInfo = getPackageInfoFromUrl(`/package/${joinedPackageName}`);
 
   const githubAdvisoryResult = await getGithubAdvisoryResultForPackage(
-      packageInfo?.parsed || ""
+      packageInfo?.name.canonical || ""
     ),
     aikidoMalwarePrediction = await getAikidoMalwarePredictionForPackage(
       joinedPackageName
     ),
-    npmPackageVersionInfo = await getNpmPackageInfo(packageInfo?.name || ""),
-    npmPackageInfo = await getNpmPackageInfo(packageInfo?.name || ""),
+    npmPackageVersionInfo = await getNpmPackageInfo(
+      packageInfo?.packageName || ""
+    ),
+    npmPackageInfo = await getNpmPackageInfo(packageInfo?.packageName || ""),
     hasGithubAdvisory = githubAdvisoryResult.length > 0,
     hasAikidoMalwarePrediction = !!aikidoMalwarePrediction,
     updatedAt = npmPackageInfo.time[npmPackageVersionInfo.version],

@@ -1,6 +1,18 @@
 import { match } from "path-to-regexp";
 
-export const getPackageInfoFromUrl = (path = window.location.pathname) => {
+export interface PackageNameInfo {
+  packageName: string;
+  name: {
+    scoped: string;
+    canonical: string;
+  };
+  scope: string | null;
+  version: string | null;
+}
+
+export const getPackageInfoFromUrl = (
+  path = window.location.pathname
+): PackageNameInfo | null => {
   const fn = match("/package{/:scope}/:name{/v/:version}");
   const result = fn(path);
 
@@ -8,18 +20,23 @@ export const getPackageInfoFromUrl = (path = window.location.pathname) => {
   else {
     const scope = result.params.scope ? String(result.params.scope) : null;
     const name = String(result.params.name);
+
     const fullPackageName = scope ? `${scope}/${name}` : name;
+    const packageNameScoped = fullPackageName.startsWith("@")
+      ? name
+      : fullPackageName;
+    const packageNameCanonical =
+      fullPackageName +
+      (result.params.version ? `@${result.params.version}` : "");
 
     return {
-      name: fullPackageName,
+      packageName: fullPackageName,
+      name: {
+        scoped: packageNameScoped,
+        canonical: packageNameCanonical
+      },
       scope,
-      scopedPackageName: fullPackageName.startsWith("@")
-        ? name
-        : fullPackageName,
-      version: result.params.version ? String(result.params.version) : null,
-      parsed:
-        fullPackageName +
-        (result.params.version ? `@${result.params.version}` : "")
+      version: result.params.version ? String(result.params.version) : null
     };
   }
 };
