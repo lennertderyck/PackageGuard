@@ -1,9 +1,4 @@
-import {
-  getAikidoMalwarePredictionForPackage,
-  getGithubAdvisoryResultForPackage,
-  getNpmPackageInfo
-} from "@/src/lib/queries";
-import dayjs from "dayjs";
+import { getPackageVulnerabilitiesInfo } from "@/src/lib/queries";
 import { readFileSync } from "fs";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
@@ -16,7 +11,7 @@ import { getPackageInfoFromUrl } from "../../../../src/lib/utils/parsers";
 //  (what where you doing on NPM then?)
 
 export const GET = async (
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ packageNameSlug: string[] }> }
 ) => {
   const { packageNameSlug } = await params;
@@ -29,34 +24,24 @@ export const GET = async (
   const joinedPackageName = packageNameSlug.slice(0, -1).join("/");
   const packageInfo = getPackageInfoFromUrl(`/package/${joinedPackageName}`);
 
-  const githubAdvisoryResult = await getGithubAdvisoryResultForPackage(
-      packageInfo?.name.canonical || ""
-    ),
-    aikidoMalwarePrediction = await getAikidoMalwarePredictionForPackage(
-      joinedPackageName
-    ),
-    npmPackageVersionInfo = await getNpmPackageInfo(
-      packageInfo?.packageName || ""
-    ),
-    npmPackageInfo = await getNpmPackageInfo(packageInfo?.packageName || ""),
-    hasGithubAdvisory = githubAdvisoryResult.length > 0,
-    hasAikidoMalwarePrediction = !!aikidoMalwarePrediction,
-    updatedAt = npmPackageInfo.time[npmPackageVersionInfo.version],
-    packageIsOlderThan24h = dayjs().diff(dayjs(updatedAt), "hour") > 24;
+  const vulnerabilitiesInfo = await getPackageVulnerabilitiesInfo(
+    packageInfo?.packageName || "",
+    packageInfo?.version || "latest"
+  );
 
   const factors = [
     {
       descr: "Vulnerabilities found",
-      condition: hasGithubAdvisory || hasAikidoMalwarePrediction
+      condition: vulnerabilitiesInfo.isVulnerable
     },
     {
       descr: "Less than 24h old",
-      condition: !packageIsOlderThan24h
+      condition: !vulnerabilitiesInfo.reachedAgeTreshold
     }
   ];
 
   const factor = factors.filter((factor) => factor.condition === true);
-  const isSafe = factor.length === 0;
+  const isSafe = vulnerabilitiesInfo.isVulnerable === false;
   const label =
     factor.length === 0
       ? "No advisories found"

@@ -90,7 +90,8 @@ export const getPackageVulnerabilitiesInfo = async (
       name: "GITHUB",
       advisories: [
         ...githubAdvisoryResponse.map((advisory) => ({
-          type: getPackageVulnerabilityTypeFromGithubAdvisory(advisory)
+          type: getPackageVulnerabilityTypeFromGithubAdvisory(advisory),
+          reason: null
         }))
       ].filter(Boolean)
     },
@@ -108,7 +109,13 @@ export const getPackageVulnerabilitiesInfo = async (
     isVulnerable: advisorySources.some(
       (source) => source.advisories.length > 0
     ),
+    reachedAgeTreshold: packageIsOlderThan24h,
     advisorySources,
-    about: {}
+    about: {
+      package: npmPackageInfo,
+      packageVersion: npmPackageVersionInfo,
+      githubAdvisories: githubAdvisoryResponse,
+      aikidoMalwarePrediction: aikidoMalwarePrediction || null
+    }
   };
 };

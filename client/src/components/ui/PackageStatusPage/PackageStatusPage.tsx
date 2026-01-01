@@ -1,13 +1,7 @@
 import { LOGO_AIKIDO, LOGO_GITHUB, LOGO_NPM_MARK } from "@/src/assets";
-import {
-  getAikidoMalwarePredictions,
-  getGithubAdvisoryResultForPackage,
-  getNpmPackageInfo,
-  getNpmPackageVersionInfo
-} from "@/src/lib/queries";
+import { getPackageVulnerabilitiesInfo } from "@/src/lib/queries";
 import { parseRepositoryUrl } from "@/src/lib/utils/general";
 import className from "classnames";
-import dayjs from "dayjs";
 import { ArrowRight, Code, Globe2, Package } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,36 +29,32 @@ const PackageStatusPage: FC<{
 
   const { scope, packageName: fullPackageName } = packageInfoFromSlug;
 
-  const scopedPackageName = packageInfoFromSlug.name.scoped;
-
   const packageVersion = packageInfoFromSlug.version || "latest";
+  const vulnerabilitiesInfo = await getPackageVulnerabilitiesInfo(
+    packageInfoFromSlug?.packageName || "",
+    packageInfoFromSlug?.version || "latest"
+  );
+  const npmPackageVersionInfoResponse =
+      vulnerabilitiesInfo.about.packageVersion,
+    githubAdvisoryResponse = vulnerabilitiesInfo.about.githubAdvisories,
+    hasAikidoMalwarePrediction =
+      vulnerabilitiesInfo.about.aikidoMalwarePrediction;
 
-  const npmPackageVersionInfoResponse = await getNpmPackageVersionInfo(
-      packageInfoFromSlug.packageName,
-      packageVersion
-    ),
-    npmPackageInfoResponse = await getNpmPackageInfo(
-      packageInfoFromSlug.packageName
-    ),
-    githubAdvisoryResponse = await getGithubAdvisoryResultForPackage(
-      fullPackageName,
-      packageVersion
-    ),
-    aikidoMalwarePredictionsResponse = await getAikidoMalwarePredictions(),
-    hasAikidoMalwarePrediction = aikidoMalwarePredictionsResponse.some(
-      (item: any) => item.package_name === fullPackageName
-    ),
-    updatedAt =
-      npmPackageInfoResponse.time[npmPackageVersionInfoResponse.version],
-    packageIsOlderThan24h = dayjs().diff(dayjs(updatedAt), "hour") > 24;
+  const badgeSource = [
+    "/badge",
+    fullPackageName,
+    "v",
+    packageVersion,
+    "badge.svg"
+  ].join("/");
 
   const ADVISORIES = [
     {
       name: "NPM",
       about: "Package age",
       url: `https://www.npmjs.com/package/${fullPackageName}?activeTab=versions`,
-      resolvedResult: !packageIsOlderThan24h
-        ? ["that package is less than 24h old"]
+      resolvedResult: !vulnerabilitiesInfo.reachedAgeTreshold
+        ? ["Package (version) is less than 24h old"]
         : [],
       logoAsset: LOGO_NPM_MARK
     },
@@ -73,7 +63,7 @@ const PackageStatusPage: FC<{
       about: "Repository info",
       url: `https://www.npmjs.com/package/${fullPackageName}`,
       resolvedResult: !npmPackageVersionInfoResponse?.repository?.url
-        ? ["that package has no public repository"]
+        ? ["Package has no public repository"]
         : [],
       logoAsset: LOGO_NPM_MARK
     },
@@ -88,8 +78,8 @@ const PackageStatusPage: FC<{
       resolvedResult: githubAdvisoryResponse.length
         ? [
             githubAdvisoryResponse.length === 1
-              ? "1 advisory"
-              : `${githubAdvisoryResponse.length} advisories`
+              ? "Found 1 advisory"
+              : `Found ${githubAdvisoryResponse.length} advisories`
           ]
         : [],
       logoAsset: LOGO_GITHUB
@@ -98,7 +88,7 @@ const PackageStatusPage: FC<{
       name: "Aikido",
       about: "Malware predictions list",
       url: "https://intel.aikido.dev/packages/npm/" + fullPackageName,
-      resolvedResult: hasAikidoMalwarePrediction ? ["malware"] : [],
+      resolvedResult: hasAikidoMalwarePrediction ? ["Malware found"] : [],
       logoAsset: LOGO_AIKIDO
     }
   ];
@@ -131,6 +121,10 @@ const PackageStatusPage: FC<{
     }
   ];
 
+  const sortedAdvisories = ADVISORIES.sort((a, b) => {
+    return b.resolvedResult.length - a.resolvedResult.length;
+  });
+
   return (
     <main className="mx-auto max-w-7xl py-24 px-24">
       <div className="grid grid-cols-12 gap-16">
@@ -144,7 +138,7 @@ const PackageStatusPage: FC<{
                 </>
               )}
               <span className="text-5xl break-balance max-w-[12ch] font-semibold">
-                {scopedPackageName}
+                {packageInfoFromSlug.name.scoped}
               </span>
             </h1>
             <h2 className="mt-2 bg-white/10 p-1 px-4 w-fit rounded-full">
@@ -176,16 +170,10 @@ const PackageStatusPage: FC<{
         </aside>
         <main className="col-span-8">
           <h3 className="text-xl font-bold mb-4">Status</h3>
-          <Image
-            src={"/badge/" + fullPackageName + "/badge.svg"}
-            alt=""
-            width={250}
-            height={46}
-          />
-
+          <Image src={badgeSource} alt="" width={250} height={46} />
           <h3 className="text-xl font-bold mb-4">Advisories</h3>
           <div className="*:border *:border-white/25 space-y-4">
-            {ADVISORIES.map((advisory, advisoryIndex) => (
+            {sortedAdvisories.map((advisory, advisoryIndex) => (
               <Link
                 key={advisoryIndex}
                 href={advisory.url}
@@ -211,7 +199,7 @@ const PackageStatusPage: FC<{
                     <p>
                       {advisory.resolvedResult.length === 0
                         ? "No advisory found"
-                        : `Found ${advisory.resolvedResult}`}
+                        : advisory.resolvedResult}
                     </p>
                   </div>
                 </div>
