@@ -145,7 +145,7 @@ const PackageStatusPage: FC<{
               {packageVersion}
             </h2>
           </div>
-          <ul className="divide-y divide-white/20 border border-white/20 rounded-xl px-2">
+          <ul className="divide-y divide-white/15 border border-white/15 rounded-xl px-2">
             {SOURCES.filter((source) => !!source.url).map(
               (source, sourceIndex) => (
                 <li key={sourceIndex} className="py-2">
