@@ -14,7 +14,7 @@ const BadgeContent: FC = () => {
             }}
             onClick={() => {
                 window.open(
-                    "https://packageguard-jung-gent.vercel.app/s/u/?t=info&source=" +
+                    "https://packageguard.jung.gent/s/u/?t=info&source=" +
                         encodeURIComponent(window.location.href),
                     "_blank"
                 );
@@ -26,7 +26,7 @@ const BadgeContent: FC = () => {
         >
             <img
                 src={
-                    "https://packageguard-jung-gent.vercel.app/s/u/?t=badge&source=" +
+                    "https://packageguard.jung.gent/s/u/?t=badge&source=" +
                     encodeURIComponent(window.location.href)
                 }
                 style={{ width: "100%", display: "block" }}
