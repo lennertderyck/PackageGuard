@@ -12,16 +12,29 @@ const BadgeContent: FC = () => {
                 border: "none",
                 background: "none"
             }}
-            onClick={() => {
-                window.open(
-                    "https://packageguard.jung.gent/s/u/?t=info&source=" +
-                        encodeURIComponent(window.location.href),
-                    "_blank"
-                );
-                // chrome.runtime.sendMessage({
-                //     action: "OPEN_SIDE_PANEL",
-                //     packageInfo: packageInfo
-                // });
+            onClick={async () => {
+                try {
+                    // Try to open side panel first
+                    if (chrome?.runtime?.sendMessage) {
+                        chrome.runtime.sendMessage({
+                            action: "OPEN_SIDE_PANEL",
+                            url: window.location.href
+                        });
+                    } else {
+                        throw new Error("Chrome runtime not available");
+                    }
+                } catch (error) {
+                    // Fallback: open in new tab if side panel fails
+                    console.log(
+                        "Side panel not available, opening in new tab:",
+                        error
+                    );
+                    window.open(
+                        "https://packageguard.jung.gent/s/u/?t=info&source=" +
+                            encodeURIComponent(window.location.href),
+                        "_blank"
+                    );
+                }
             }}
         >
             <img

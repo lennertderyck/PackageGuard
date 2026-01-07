@@ -9,7 +9,9 @@ const DESTINATIONS: Record<string, (input: PackageNameInfo) => string> = {
   badge: (input) =>
     `/badge/${input.packageName}/v/${input.version || "latest"}/badge.svg`,
   info: (input) =>
-    `/package/${input.packageName}/v/${input.version || "latest"}`
+    `/package/${input.packageName}/v/${input.version || "latest"}`,
+  sidepanel: (input) =>
+    `/sidepanel/${input.packageName}/v/${input.version || "latest"}`
 };
 
 export const GET = async (request: NextRequest) => {

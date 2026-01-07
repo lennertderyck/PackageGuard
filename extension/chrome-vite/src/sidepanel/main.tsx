@@ -1,15 +1,10 @@
-import { getPackageInfoFromUrl } from "@/lib/utils";
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 
 const App = () => {
     const [height, setHeight] = useState(0);
-    const [packageInfo, setPackageInfo] = useState<{
-        name: string;
-        version: string | null;
-        parsed: string;
-    } | null>(null);
+    const [url, setUrl] = useState<string | null>(null);
 
     useEffect(() => {
         chrome.tabs.query(
@@ -19,27 +14,25 @@ const App = () => {
                 const activeURL = activeTab?.url;
 
                 if (activeURL) {
-                    setPackageInfo(
-                        getPackageInfoFromUrl(new URL(activeURL).pathname)
-                    );
+                    setUrl(activeURL);
                 }
             }
         );
         chrome.runtime.onMessage.addListener((message) => {
             (async () => {
-                setPackageInfo(message.packageInfo);
+                setUrl(message.url);
             })();
         });
     }, []);
 
-    if (!packageInfo) {
+    if (!url) {
         return <div>Loading...</div>;
     }
     return (
         <iframe
-            src={`http://localhost:3000/sidepanel/package?name=${encodeURIComponent(
-                packageInfo.name
-            )}&version=${encodeURIComponent(packageInfo.version || "latest")}`}
+            src={`http://localhost:3000/s/u?source=${encodeURIComponent(
+                url || ""
+            )}&t=sidepanel`}
             style={{ width: "100%", height: height + "px", border: "none" }}
             onLoad={() => setHeight(window.document.body.clientHeight)}
         />
