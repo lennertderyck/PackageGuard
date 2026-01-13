@@ -1,4 +1,6 @@
+import { cn } from "@/src/lib/utils/styling";
 import { Slot } from "@radix-ui/react-slot";
+import { cva, VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import { ComponentProps, FC } from "react";
 
@@ -10,10 +12,10 @@ export const LinkListItem: FC<LinkListItem> = ({ asChild, ...otherProps }) => {
   const Comp = asChild ? Slot : "button";
 
   return (
-    <li className="py-3">
+    <li className="py-3 group">
       <Comp
         className={classNames(
-          "flex items-start gap-3 hover:bg-white/5 p-4 rounded-sm transition-colors"
+          "flex items-start gap-3 hover:bg-white/5 p-4 rounded-md group-first:rounded-t-xl group-last:rounded-b-xl transition-colors"
         )}
         {...otherProps}
       />
@@ -21,15 +23,26 @@ export const LinkListItem: FC<LinkListItem> = ({ asChild, ...otherProps }) => {
   );
 };
 
-interface Props extends ComponentProps<"div"> {}
+const linkListVariants = cva("divide-y rounded-3xl px-3", {
+  variants: {
+    variant: {
+      filled: "bg-white/5 divide-white/10",
+      outline: "border divide-white/15 border-white/15"
+    }
+  },
+  defaultVariants: {
+    variant: "outline"
+  }
+});
 
-const LinkList: FC<Props> = ({ className, ...otherProps }) => {
+interface Props
+  extends ComponentProps<"ul">,
+    VariantProps<typeof linkListVariants> {}
+
+const LinkList: FC<Props> = ({ className, variant, ...otherProps }) => {
   return (
     <ul
-      className={classNames(
-        "divide-y divide-white/15 border border-white/15 rounded-xl px-3",
-        className
-      )}
+      className={cn(linkListVariants({ variant }), className)}
       {...otherProps}
     />
   );

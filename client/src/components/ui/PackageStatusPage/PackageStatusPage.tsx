@@ -1,14 +1,13 @@
 import { LOGO_AIKIDO, LOGO_GITHUB, LOGO_NPM_MARK } from "@/src/assets";
 import { getPackageVulnerabilitiesInfo } from "@/src/lib/queries";
 import { parseRepositoryUrl } from "@/src/lib/utils/general";
-import { default as classNames } from "classnames";
-import { ArrowRight, ArrowUpRight, Code, Globe2, Package } from "lucide-react";
+import { ArrowUpRight, Code, Globe2, Package } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FC } from "react";
 import { getPackageInfoFromUrl } from "../../../lib/utils/parsers";
-import LinkList, { LinkListItem } from "../../element/LinkList/LinkList";
 import PackageVersionbadge from "../../element/PackageVersionbadge/PackageVersionbadge";
+import { AdvisoryList } from "../AdvisoryList/AdvisoryList";
 
 const PackageStatusPage: FC<{
   params: Promise<{ packageNameSlug: string[] }>;
@@ -123,6 +122,10 @@ const PackageStatusPage: FC<{
     }
   ];
 
+  const groupedAdvisories = Object.groupBy(ADVISORIES, (advisory) =>
+    advisory.resolvedResult.length > 0 ? "ADVISED" : "NONE"
+  );
+
   const sortedAdvisories = ADVISORIES.sort((a, b) => {
     return b.resolvedResult.length - a.resolvedResult.length;
   });
@@ -177,42 +180,10 @@ const PackageStatusPage: FC<{
           <h3 className="text-xl font-bold mb-4">Status</h3>
           <Image src={badgeSource} alt="" width={250} height={46} />
           <h3 className="text-xl font-bold mb-4">Advisories</h3>
-          <LinkList>
-            {sortedAdvisories.map((advisory, advisoryIndex) => (
-              <LinkListItem asChild key={advisoryIndex}>
-                <Link
-                  key={advisoryIndex}
-                  href={advisory.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={classNames(
-                    advisory.resolvedResult.length === 0 &&
-                      "**:opacity-85 pointer-events-none"
-                  )}
-                >
-                  <div className="flex gap-5 w-full">
-                    <Image
-                      src={advisory.logoAsset}
-                      alt="Logo Aikido"
-                      className="size-5 translate-y-1"
-                    />
-                    <div className="flex-1">
-                      <h4>
-                        <span className="font-bold">{advisory.name}</span> /{" "}
-                        {advisory.about}
-                      </h4>
-                      <p>
-                        {advisory.resolvedResult.length === 0
-                          ? "No advisory found"
-                          : advisory.resolvedResult}
-                      </p>
-                    </div>
-                  </div>
-                  {advisory.resolvedResult.length !== 0 && <ArrowRight />}
-                </Link>
-              </LinkListItem>
-            ))}
-          </LinkList>
+          <div className="mb-4">
+            <AdvisoryList advisories={groupedAdvisories.ADVISED || []} />
+          </div>
+          <AdvisoryList advisories={groupedAdvisories.NONE || []} />
         </main>
       </div>
     </main>
