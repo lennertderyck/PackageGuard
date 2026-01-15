@@ -19,6 +19,7 @@ const App = () => {
             }
         );
         chrome.runtime.onMessage.addListener((message) => {
+            console.log("Received message in side panel:", message);
             (async () => {
                 setUrl(message.url);
             })();
@@ -30,11 +31,12 @@ const App = () => {
     }
     return (
         <iframe
-            src={`http://localhost:3000/s/u?source=${encodeURIComponent(
+            src={`http://packageguard.jung.gent/s/u?source=${encodeURIComponent(
                 url || ""
             )}&t=sidepanel`}
             style={{ width: "100%", height: height + "px", border: "none" }}
             onLoad={() => setHeight(window.document.body.clientHeight)}
+            onLoadStart={console.log}
         />
     );
 };

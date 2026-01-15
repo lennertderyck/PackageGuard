@@ -3,14 +3,14 @@
 let windowId: number | undefined = undefined;
 
 // Helper function to check if URL is npmjs.com
-function isNpmjsUrl(url: string | undefined): boolean {
+const isNpmjsUrl = (url: string | undefined) => {
     if (!url) return false;
     try {
         return new URL(url).hostname.endsWith("npmjs.com");
     } catch {
         return false;
     }
-}
+};
 
 // Helper function to handle side panel visibility
 async function handleSidePanelVisibility(tabId: number, windowId: number) {
@@ -66,6 +66,8 @@ chrome.runtime.onMessage.addListener((message) => {
         });
         if (message.action === "OPEN_SIDE_PANEL" && windowId !== undefined) {
             chrome.sidePanel.open({ windowId: windowId });
+        } else if (!windowId) {
+            console.log("Window ID is undefined, cannot open side panel");
         }
     })();
 });
